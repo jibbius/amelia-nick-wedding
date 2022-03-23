@@ -26,26 +26,30 @@ prev_group=""
 for jpg_file in *.jpg;
 do
     if [ $jpg_file != "*.jpg" ]; then
-        filename_no_ext="${jpg_file%.*}" # Example: 2017-04-15_15-07-08_1
-        filename_no_inc="${filename_no_ext::${#filename_no_ext}-2}" # Example: 2017-04-15_15-07-08
+        filename_no_ext="${jpg_file%.*}" # Example: 2017-04-15_15-07-08_1of4
+        filename_no_inc="${filename_no_ext::${#filename_no_ext}-5}" # Example: 2017-04-15_15-07-08
         this_group=$filename_no_inc
 
-        if [ $this_group != "$prev_group" ]; then
-            echo "New group "
-
+        if [ "$this_group" != "$prev_group" ]; then
+           
+            #Close previous HTML
             if [[ ! -z $prev_group ]]; then
-                cat _footer.html >> "${filename_no_inc}.html"
+                cat _footer.html >> "../${prev_group}.html"
             fi
 
-            cat _header.html > "${filename_no_inc}.html"
+            echo "Creating page: ${filename_no_inc}.html"
+            cat _header.html > "../${filename_no_inc}.html"
         fi
 
-        echo "      <img src='${jpg_file}' height='480px' width='800px'></img>" >> $filename_no_inc.html
+        #Append image
+        echo "      <img src='photo_booth/${jpg_file}' width='820px' height='616px'></img>" >> "../${filename_no_inc}.html"
 
         prev_group=$filename_no_inc
+    else
+        echo "No JPGs found"
     fi
 done
 
 if [[ ! -z $prev_group ]]; then
-    cat _footer.html >> "${filename_no_inc}.html"
+    cat _footer.html >> "../${prev_group}.html"
 fi
